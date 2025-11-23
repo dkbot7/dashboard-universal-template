@@ -24,3 +24,176 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Accessibility Modes */
+
+/* Dark Mode */
+.dark-mode {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+}
+
+.dark-mode body {
+  background: #0a0a0a;
+  color: #ededed;
+}
+
+.dark-mode .bg-white {
+  background-color: #1f2937 !important;
+}
+
+.dark-mode .text-gray-900 {
+  color: #f3f4f6 !important;
+}
+
+.dark-mode .text-gray-600 {
+  color: #d1d5db !important;
+}
+
+.dark-mode .border-gray-200 {
+  border-color: #374151 !important;
+}
+
+/* High Contrast Mode */
+.high-contrast * {
+  border-width: 2px !important;
+}
+
+.high-contrast {
+  --background: #ffffff;
+  --foreground: #000000;
+}
+
+.high-contrast body {
+  background: #ffffff;
+  color: #000000;
+}
+
+.high-contrast .text-gray-600,
+.high-contrast .text-gray-700,
+.high-contrast .text-gray-800 {
+  color: #000000 !important;
+}
+
+.high-contrast .bg-blue-600,
+.high-contrast .bg-blue-500 {
+  background-color: #0000ff !important;
+}
+
+.high-contrast .bg-green-600,
+.high-contrast .bg-green-500 {
+  background-color: #008000 !important;
+}
+
+.high-contrast .bg-red-600,
+.high-contrast .bg-red-500 {
+  background-color: #ff0000 !important;
+}
+
+.high-contrast .border {
+  border-color: #000000 !important;
+}
+
+/* Colorblind Safe Mode */
+.colorblind-mode .bg-blue-600,
+.colorblind-mode .bg-blue-500 {
+  background-color: #0072b2 !important;
+}
+
+.colorblind-mode .bg-green-600,
+.colorblind-mode .bg-green-500 {
+  background-color: #009e73 !important;
+}
+
+.colorblind-mode .bg-red-600,
+.colorblind-mode .bg-red-500,
+.colorblind-mode .bg-orange-600 {
+  background-color: #d55e00 !important;
+}
+
+.colorblind-mode .bg-yellow-600,
+.colorblind-mode .bg-yellow-500 {
+  background-color: #f0e442 !important;
+}
+
+.colorblind-mode .text-blue-600 {
+  color: #0072b2 !important;
+}
+
+.colorblind-mode .text-green-600 {
+  color: #009e73 !important;
+}
+
+.colorblind-mode .text-red-600,
+.colorblind-mode .text-orange-600 {
+  color: #d55e00 !important;
+}
+
+/* Font Size Controls */
+.font-small {
+  font-size: 14px;
+}
+
+.font-small h1 {
+  font-size: 2rem;
+}
+
+.font-small h2 {
+  font-size: 1.5rem;
+}
+
+.font-small h3 {
+  font-size: 1.25rem;
+}
+
+.font-small .text-lg {
+  font-size: 1rem;
+}
+
+.font-medium {
+  font-size: 16px;
+}
+
+.font-medium h1 {
+  font-size: 2.25rem;
+}
+
+.font-medium h2 {
+  font-size: 1.875rem;
+}
+
+.font-medium h3 {
+  font-size: 1.5rem;
+}
+
+.font-medium .text-lg {
+  font-size: 1.125rem;
+}
+
+.font-large {
+  font-size: 18px;
+}
+
+.font-large h1 {
+  font-size: 2.5rem;
+}
+
+.font-large h2 {
+  font-size: 2rem;
+}
+
+.font-large h3 {
+  font-size: 1.75rem;
+}
+
+.font-large .text-lg {
+  font-size: 1.25rem;
+}
+
+.font-large .text-sm {
+  font-size: 1rem;
+}
+
+.font-large .text-xs {
+  font-size: 0.875rem;
+}

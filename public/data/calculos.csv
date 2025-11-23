@@ -1,0 +1,33 @@
+Bloco,Métrica,Valor,Vendedor,Receita Total,Leads Recebidos,Leads Convertidos,Leads Perdidos,Conversão (%),Ticket Médio,% Leads Perdidos,Receita por Lead,Tempo Médio Conversão (dias),Motivo,A,B,C,D,E,Total
+Resumo Geral,Impressões de Anúncios,62348630,,,,,,,,,,,,,,,,,
+Resumo Geral,Visitantes no site,1421300,,,,,,,,,,,,,,,,,
+Resumo Geral,Cliques no Anúncio,522108,,,,,,,,,,,,,,,,,
+Resumo Geral,Leads Captados via Tráfego Pago,346,,,,,,,,,,,,,,,,,
+Resumo Geral,Leads Cadastrados no CRM,2158,,,,,,,,,,,,,,,,,
+Resumo Geral,Leads Convertidos,499,,,,,,,,,,,,,,,,,
+Resumo Geral,Leads Perdidos,1659,,,,,,,,,,,,,,,,,
+Resumo Geral,Taxa Conversão Leads → Clientes,"23,12%",,,,,,,,,,,,,,,,,
+Resumo Geral,Custo Total Tráfego Pago,"R$ 1.392.814,10",,,,,,,,,,,,,,,,,
+Resumo Geral,CPA,"R$ 4.025,47",,,,,,,,,,,,,,,,,
+Resumo Geral,Conversão Visitantes → Leads,"0,15%",,,,,,,,,,,,,,,,,
+Resumo Geral,Conversão Visitantes → Clientes,"0,04%",,,,,,,,,,,,,,,,,
+Resumo Geral,Receita Total,"R$ 9.735.383,85",,,,,,,,,,,,,,,,,
+Resumo Geral,Lucro Líquido,"R$ 8.342.569,75",,,,,,,,,,,,,,,,,
+Resumo Geral,Margem Líquida,"85,69%",,,,,,,,,,,,,,,,,
+Resumo Geral,ROAS,"698,97%",,,,,,,,,,,,,,,,,
+Resumo Geral,Tempo Médio para Conversão,9 dias,,,,,,,,,,,,,,,,,
+Resumo Geral,Ticket Médio,"R$ 19.509,79",,,,,,,,,,,,,,,,,
+Resumo Geral,LTV,"R$ 19.509,79",,,,,,,,,,,,,,,,,
+Resumo Geral,Leads Ativos para Follow-up,1530,,,,,,,,,,,,,,,,,
+Comparativo por Vendedor,,,A,"R$ 2.023.026,90",460.0,104.0,356.0,"22,61%","R$ 19.452,18","77,39%","R$ 4.397,88",11.0,,,,,,,
+Comparativo por Vendedor,,,B,"R$ 2.068.453,65",407.0,104.0,303.0,"25,55%","R$ 19.888,98","74,45%","R$ 5.082,20",11.0,,,,,,,
+Comparativo por Vendedor,,,C,"R$ 1.797.927,30",422.0,93.0,329.0,"22,04%","R$ 19.332,55","77,96%","R$ 4.260,49",10.0,,,,,,,
+Comparativo por Vendedor,,,D,"R$ 1.880.748,00",441.0,95.0,346.0,"21,54%","R$ 19.797,35","78,46%","R$ 4.264,73",6.0,,,,,,,
+Comparativo por Vendedor,,,E,"R$ 1.965.228,00",428.0,103.0,325.0,"24,07%","R$ 19.079,88","75,93%","R$ 4.591,65",8.0,,,,,,,
+Motivos de Perda,,,,,,,,,,,,,Não retornou contato,265.0,242.0,264.0,267.0,266.0,1304.0
+Motivos de Perda,,,,,,,,,,,,,Não tem interesse,24.0,11.0,19.0,12.0,15.0,81.0
+Motivos de Perda,,,,,,,,,,,,,Outros,10.0,8.0,7.0,9.0,4.0,38.0
+Motivos de Perda,,,,,,,,,,,,,Preço alto,31.0,24.0,20.0,34.0,27.0,136.0
+Motivos de Perda,,,,,,,,,,,,,Vai deixar para outro momento,23.0,17.0,16.0,21.0,13.0,90.0
+Motivos de Perda,,,,,,,,,,,,,Vai fechar com concorrência,3.0,1.0,3.0,3.0,0.0,10.0
+Motivos de Perda,,,,,,,,,,,,,Total Geral,356.0,303.0,329.0,346.0,325.0,1659.0
