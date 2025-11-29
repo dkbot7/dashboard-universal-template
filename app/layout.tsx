@@ -2,14 +2,16 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Sidebar } from "@/components/sidebar";
+import { dashboardConfig } from "@/config/dashboard.config";
 
 const inter = Inter({
   subsets: ["latin"],
 });
 
+// Metadata dinamica baseada na configuracao
 export const metadata: Metadata = {
-  title: "Dashboard BR Bank - Tático",
-  description: "Dashboard para monitorar e otimizar a jornada de leads até a conversão",
+  title: dashboardConfig.name,
+  description: dashboardConfig.description,
 };
 
 export default function RootLayout({
@@ -18,14 +20,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR">
+    <html lang={dashboardConfig.locale.language}>
       <body className={inter.className}>
         <div className="flex h-screen overflow-hidden">
           <Sidebar />
-          <main className="flex-1 overflow-y-auto bg-gray-50">
-            <div className="container mx-auto p-8">
-              {children}
-            </div>
+          <main
+            className="flex-1 overflow-y-auto"
+            style={{ backgroundColor: dashboardConfig.theme.background }}
+          >
+            <div className="container mx-auto p-8">{children}</div>
           </main>
         </div>
       </body>

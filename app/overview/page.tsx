@@ -1,59 +1,116 @@
-"use client"
+"use client";
 
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
 
-import { useEffect, useState } from "react"
-import { KPICard } from "@/components/kpi-card"
-import { loadCalculos, Calculos } from "@/lib/data-loader"
-import { calcularROAS, calcularCAC } from "@/lib/kpi-calculator"
-import { METAS } from "@/config/settings"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { DollarSign, TrendingUp, Users, Target } from "lucide-react"
+import { useEffect, useState } from "react";
+import { KPICard } from "@/components/kpi-card";
+import { useDataFromPath, sumField, avgField, countField } from "@/lib/data-loader";
+import { calcularROAS, calcularCAC, calcularTaxaConversao, calcularKPICompleto } from "@/lib/kpi-calculator";
+import { generateInsight, gerarInsightMeta } from "@/lib/insights-generator";
+import { dashboardConfig } from "@/config/dashboard.config";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  DollarSign,
+  TrendingUp,
+  Users,
+  Target,
+  BarChart3,
+  Percent,
+} from "lucide-react";
+
+// Mapa de icones para KPIs
+const iconMap: Record<string, React.ReactNode> = {
+  revenue: <DollarSign className="h-4 w-4" />,
+  profit: <TrendingUp className="h-4 w-4" />,
+  roas: <Target className="h-4 w-4" />,
+  cac: <Users className="h-4 w-4" />,
+  conversionRate: <Percent className="h-4 w-4" />,
+  default: <BarChart3 className="h-4 w-4" />,
+};
 
 export default function OverviewPage() {
-  const [isLoading, setIsLoading] = useState(true)
-  const [calculos, setCalculos] = useState<Calculos[]>([])
+  const { data, loading, error } = useDataFromPath("/data/data.csv", "csv");
+  const [kpiValues, setKpiValues] = useState<Record<string, number>>({});
 
   useEffect(() => {
-    async function loadData() {
-      setIsLoading(true)
-      const data = await loadCalculos()
-      setCalculos(data)
-      setIsLoading(false)
-    }
-    loadData()
-  }, [])
+    if (data.length > 0) {
+      // Calcular valores dos KPIs a partir dos dados
+      // Estes campos devem corresponder aos seus dados CSV
+      const revenue = sumField(data, "Receita") || sumField(data, "revenue") || sumField(data, "valor");
+      const cost = sumField(data, "Custo") || sumField(data, "cost") || sumField(data, "custo");
+      const adsCost = sumField(data, "Custo Ads") || sumField(data, "ads_cost") || cost * 0.3;
+      const salesCost = sumField(data, "Custo Vendas") || sumField(data, "sales_cost") || cost * 0.2;
+      const customers = countField(data) || 100;
+      const conversions = sumField(data, "Conversoes") || sumField(data, "conversions") || customers;
+      const leads = sumField(data, "Leads") || sumField(data, "leads") || customers * 5;
 
-  if (isLoading) {
+      setKpiValues({
+        revenue,
+        profit: revenue - cost,
+        roas: calcularROAS(revenue, adsCost),
+        cac: calcularCAC(adsCost, salesCost, customers),
+        conversionRate: calcularTaxaConversao(conversions, leads),
+        customers,
+        leads,
+        adsCost,
+      });
+    }
+  }, [data]);
+
+  if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Carregando dados reais...</p>
+          <div
+            className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4"
+            style={{ borderColor: dashboardConfig.theme.primary }}
+          />
+          <p className="text-gray-600">Carregando dados...</p>
         </div>
       </div>
-    )
+    );
   }
 
-  // Calcular KPIs
-  const receitaTotal = calculos.reduce((sum, row) => sum + Number(row.Receita || 0), 0)
-  const custoTotalVendas = calculos.reduce((sum, row) => sum + Number(row["Custo Total Vendas"] || 0), 0)
-  const clientesAdquiridos = calculos.reduce((sum, row) => sum + Number(row["Clientes Adquiridos"] || 0), 0)
-  const custoTotalAds = calculos.reduce((sum, row) => sum + Number(row["Custo Ads"] || 0), 0)
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Card className="max-w-md">
+          <CardContent className="pt-6">
+            <p className="text-center text-gray-600">
+              Coloque seus dados em <code>/public/data/data.csv</code> para
+              visualizar os KPIs.
+            </p>
+            <p className="text-center text-sm text-gray-400 mt-2">
+              Erro: {error}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
-  const lucroLiquido = calculos.reduce((sum, row) => sum + Number(row["Lucro Líquido"] || 0), 0)
-  const roas = calcularROAS(receitaTotal, custoTotalAds) * 100
-  const cac = calcularCAC(custoTotalAds, custoTotalVendas, clientesAdquiridos)
+  // Buscar meta de receita
+  const revenueGoal = dashboardConfig.goals.find(
+    (g) => g.id === "revenueGoal"
+  );
+  const progressoMeta = revenueGoal
+    ? (kpiValues.revenue / revenueGoal.target) * 100
+    : 0;
 
-  // Calcular progresso da meta
-  const progressoMeta = (receitaTotal / METAS.receitaAnual) * 100
+  // Gerar insights
+  const roasInsight = generateInsight("roas", kpiValues.roas);
+  const conversionInsight = generateInsight(
+    "conversionRate",
+    kpiValues.conversionRate
+  );
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div>
-        <h1 className="text-4xl font-bold text-gray-900">📊 Visão Executiva</h1>
+        <h1 className="text-4xl font-bold text-gray-900">Visao Geral</h1>
         <p className="text-lg text-gray-600 mt-2">
-          Desempenho financeiro e de aquisição consolidado
+          Desempenho consolidado e principais indicadores
         </p>
       </div>
 
@@ -61,89 +118,148 @@ export default function OverviewPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <KPICard
           title="Receita Total"
-          value={receitaTotal}
+          value={kpiValues.revenue || 0}
           format="currency"
-          icon={<DollarSign className="h-4 w-4" />}
+          icon={iconMap.revenue}
         />
         <KPICard
-          title="Lucro Líquido"
-          value={lucroLiquido}
+          title="Lucro Liquido"
+          value={kpiValues.profit || 0}
           format="currency"
-          icon={<TrendingUp className="h-4 w-4" />}
+          icon={iconMap.profit}
         />
         <KPICard
           title="ROAS"
-          value={roas}
+          value={(kpiValues.roas || 0) * 100}
           format="percentage"
-          icon={<Target className="h-4 w-4" />}
+          icon={iconMap.roas}
         />
         <KPICard
           title="CAC"
-          value={cac}
+          value={kpiValues.cac || 0}
           format="currency"
-          icon={<Users className="h-4 w-4" />}
+          icon={iconMap.cac}
         />
       </div>
 
-      {/* Meta de Receita */}
-      <Card>
-        <CardHeader>
-          <CardTitle>🎯 Progresso da Meta Anual</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <div className="flex justify-between text-sm">
-              <span className="font-medium">Meta: R$ 30 milhões</span>
-              <span className="font-bold text-blue-600">{progressoMeta.toFixed(1)}%</span>
+      {/* KPIs Secundarios */}
+      <div className="grid gap-4 md:grid-cols-3">
+        <KPICard
+          title="Taxa de Conversao"
+          value={kpiValues.conversionRate || 0}
+          format="percentage"
+          icon={iconMap.conversionRate}
+        />
+        <KPICard
+          title="Clientes"
+          value={kpiValues.customers || 0}
+          format="number"
+          icon={iconMap.cac}
+        />
+        <KPICard
+          title="Leads"
+          value={kpiValues.leads || 0}
+          format="number"
+          icon={iconMap.default}
+        />
+      </div>
+
+      {/* Progresso da Meta */}
+      {revenueGoal && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Progresso da Meta</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex justify-between text-sm">
+                <span className="font-medium">
+                  Meta:{" "}
+                  {new Intl.NumberFormat("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  }).format(revenueGoal.target)}
+                </span>
+                <span
+                  className="font-bold"
+                  style={{ color: dashboardConfig.theme.primary }}
+                >
+                  {progressoMeta.toFixed(1)}%
+                </span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-4">
+                <div
+                  className="h-4 rounded-full transition-all"
+                  style={{
+                    width: `${Math.min(progressoMeta, 100)}%`,
+                    backgroundColor: dashboardConfig.theme.primary,
+                  }}
+                />
+              </div>
+              <p className="text-sm text-gray-600">
+                {gerarInsightMeta(kpiValues.revenue || 0, revenueGoal.target)}
+              </p>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-4">
-              <div
-                className="bg-blue-600 h-4 rounded-full transition-all"
-                style={{ width: `${Math.min(progressoMeta, 100)}%` }}
-              />
-            </div>
-            <p className="text-sm text-gray-600">
-              {progressoMeta >= 100
-                ? "🎉 Meta atingida! Parabéns!"
-                : `Faltam R$ ${((METAS.receitaAnual - receitaTotal) / 1000000).toFixed(2)} milhões para atingir a meta`
-              }
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Insights */}
-      <Card className={roas >= METAS.roasMinimo ? "bg-green-50 border-green-200" : "bg-yellow-50 border-yellow-200"}>
-        <CardHeader>
-          <CardTitle className={roas >= METAS.roasMinimo ? "text-green-900" : "text-yellow-900"}>
-            💡 Insight de ROAS
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className={roas >= METAS.roasMinimo ? "text-green-800" : "text-yellow-800"}>
-            {roas >= METAS.roasMinimo
-              ? `✅ Excelente! O ROAS de ${roas.toFixed(0)}% está acima da meta de ${METAS.roasMinimo}%. Continue investindo nos canais mais rentáveis.`
-              : `⚠️ Atenção: O ROAS de ${roas.toFixed(0)}% está abaixo da meta de ${METAS.roasMinimo}%. Revise as campanhas de menor performance.`
-            }
-          </p>
-        </CardContent>
-      </Card>
+      {roasInsight && (
+        <Card
+          className="border-l-4"
+          style={{
+            borderLeftColor:
+              roasInsight.severity === "success"
+                ? dashboardConfig.theme.success
+                : roasInsight.severity === "warning"
+                  ? dashboardConfig.theme.warning
+                  : dashboardConfig.theme.danger,
+          }}
+        >
+          <CardHeader>
+            <CardTitle className="text-lg">
+              {roasInsight.icon} Insight de ROAS
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-700">{roasInsight.message}</p>
+          </CardContent>
+        </Card>
+      )}
 
-      <Card className={cac <= METAS.cacMaximo ? "bg-green-50 border-green-200" : "bg-yellow-50 border-yellow-200"}>
-        <CardHeader>
-          <CardTitle className={cac <= METAS.cacMaximo ? "text-green-900" : "text-yellow-900"}>
-            💡 Insight de CAC
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className={cac <= METAS.cacMaximo ? "text-green-800" : "text-yellow-800"}>
-            {cac <= METAS.cacMaximo
-              ? `✅ Ótimo! O CAC de R$ ${cac.toFixed(2)} está dentro da meta (≤ R$ ${METAS.cacMaximo}). A aquisição está eficiente.`
-              : `⚠️ Atenção: O CAC de R$ ${cac.toFixed(2)} está acima da meta (R$ ${METAS.cacMaximo}). Otimize as campanhas para reduzir custos.`
-            }
+      {conversionInsight && (
+        <Card
+          className="border-l-4"
+          style={{
+            borderLeftColor:
+              conversionInsight.severity === "success"
+                ? dashboardConfig.theme.success
+                : conversionInsight.severity === "warning"
+                  ? dashboardConfig.theme.warning
+                  : dashboardConfig.theme.danger,
+          }}
+        >
+          <CardHeader>
+            <CardTitle className="text-lg">
+              {conversionInsight.icon} Insight de Conversao
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-700">{conversionInsight.message}</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Resumo */}
+      <Card className="bg-gray-50">
+        <CardContent className="pt-6">
+          <p className="text-sm text-gray-500 text-center">
+            Dados carregados: {data.length} registros | Ultima atualizacao:{" "}
+            {new Date().toLocaleString("pt-BR")}
           </p>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

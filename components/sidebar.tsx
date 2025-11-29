@@ -3,38 +3,30 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import {
-  Home,
-  BarChart3,
-  TrendingUp,
-  Users,
-  DollarSign,
-  Rocket,
-  Brain,
-  Settings
-} from "lucide-react";
-
-const navigation = [
-  { name: "Home", href: "/", icon: Home },
-  { name: "Visão Executiva", href: "/overview", icon: BarChart3 },
-  { name: "Aquisição de Leads", href: "/acquisition", icon: TrendingUp },
-  { name: "Retenção de Leads", href: "/retention", icon: Users },
-  { name: "Monetização", href: "/monetization", icon: DollarSign },
-  { name: "Projeções e Receita", href: "/projections", icon: Rocket },
-  { name: "Visão Analítica", href: "/analytics", icon: Brain },
-  { name: "Acessibilidade", href: "/accessibility", icon: Settings },
-];
+import { dashboardConfig } from "@/config/dashboard.config";
+import { COMPANY, SIDEBAR_THEME } from "@/config/settings";
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { navigation } = dashboardConfig;
 
   return (
-    <div className="flex h-full w-64 flex-col bg-gray-900 text-white">
-      <div className="flex h-16 items-center justify-center border-b border-gray-800">
-        <h1 className="text-xl font-bold">🏦 BR Bank Dashboard</h1>
+    <div
+      className="flex h-full w-64 flex-col text-white"
+      style={{ backgroundColor: SIDEBAR_THEME.background }}
+    >
+      {/* Logo / Header */}
+      <div
+        className="flex h-16 items-center justify-center border-b"
+        style={{ borderColor: SIDEBAR_THEME.hoverBackground }}
+      >
+        <h1 className="text-xl font-bold truncate px-4">
+          {COMPANY.shortName || COMPANY.name}
+        </h1>
       </div>
 
-      <nav className="flex-1 space-y-1 px-2 py-4">
+      {/* Navigation */}
+      <nav className="flex-1 space-y-1 px-2 py-4 overflow-y-auto">
         {navigation.map((item) => {
           const isActive = pathname === item.href;
           const Icon = item.icon;
@@ -44,26 +36,75 @@ export function Sidebar() {
               key={item.name}
               href={item.href}
               className={cn(
-                "group flex items-center rounded-md px-2 py-2 text-sm font-medium transition-colors",
+                "group flex items-center rounded-md px-3 py-2.5 text-sm font-medium transition-all duration-200",
                 isActive
-                  ? "bg-gray-800 text-white"
-                  : "text-gray-300 hover:bg-gray-800 hover:text-white"
+                  ? "shadow-sm"
+                  : "hover:shadow-sm"
               )}
+              style={{
+                backgroundColor: isActive
+                  ? SIDEBAR_THEME.activeBackground
+                  : "transparent",
+                color: isActive ? SIDEBAR_THEME.activeText : SIDEBAR_THEME.text,
+              }}
+              onMouseEnter={(e) => {
+                if (!isActive) {
+                  e.currentTarget.style.backgroundColor =
+                    SIDEBAR_THEME.hoverBackground;
+                  e.currentTarget.style.color = SIDEBAR_THEME.activeText;
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isActive) {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = SIDEBAR_THEME.text;
+                }
+              }}
+              title={item.description}
             >
-              <Icon className="mr-3 h-5 w-5" />
-              {item.name}
+              <Icon className="mr-3 h-5 w-5 flex-shrink-0" />
+              <span className="truncate">{item.name}</span>
+              {item.badge && (
+                <span
+                  className="ml-auto text-xs px-2 py-0.5 rounded-full"
+                  style={{
+                    backgroundColor: dashboardConfig.theme.primary,
+                    color: "#fff",
+                  }}
+                >
+                  {item.badge}
+                </span>
+              )}
             </Link>
           );
         })}
       </nav>
 
-      <div className="border-t border-gray-800 p-4">
-        <p className="text-xs text-gray-400 text-center">
-          Desenvolvido por Growth Analytics Team
+      {/* Footer */}
+      <div
+        className="border-t p-4"
+        style={{ borderColor: SIDEBAR_THEME.hoverBackground }}
+      >
+        <p
+          className="text-xs text-center"
+          style={{ color: SIDEBAR_THEME.text }}
+        >
+          {COMPANY.footer.team && (
+            <>
+              {COMPANY.footer.team}
+              <br />
+            </>
+          )}
+          {COMPANY.footer.company} &copy; {COMPANY.footer.year}
         </p>
-        <p className="text-xs text-gray-400 text-center">
-          BR Bank • ©2025
-        </p>
+        {COMPANY.footer.version && (
+          <p
+            className="text-xs text-center mt-1 opacity-60"
+            style={{ color: SIDEBAR_THEME.text }}
+          >
+            v{COMPANY.footer.version}
+          </p>
+        )}
       </div>
     </div>
   );
