@@ -1,9 +1,7 @@
 "use client"
 
-export const dynamic = 'force-dynamic'
-
 import { useEffect, useState } from "react"
-import { loadCRM, loadKPIs, CRMLead, CSVRow } from "@/lib/data-loader"
+import { loadCRM, loadKPIs, CRMLead, DataRow } from "@/lib/data-loader"
 import { calcularTicketMedio, calcularLTV } from "@/lib/kpi-calculator"
 import { gerarAlertaMeta } from "@/lib/insights-generator"
 import { KPICard } from "@/components/kpi-card"
@@ -15,7 +13,7 @@ import { META_RECEITA } from "@/config/settings"
 export default function MonetizationPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [crmData, setCrmData] = useState<CRMLead[]>([])
-  const [kpisData, setKpisData] = useState<CSVRow[]>([])
+  const [kpisData, setKpisData] = useState<DataRow[]>([])
 
   useEffect(() => {
     async function loadData() {

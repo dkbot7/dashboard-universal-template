@@ -1,7 +1,5 @@
 "use client"
 
-export const dynamic = 'force-dynamic'
-
 import { useEffect, useState } from "react"
 import { loadDadosConsolidados, loadCalculos, DadosConsolidados, Calculos } from "@/lib/data-loader"
 import {

@@ -419,12 +419,11 @@ export function groupAndAggregate<T extends DataRow>(
     operation: "sum" | "avg" | "max" | "min" | "count";
     alias?: string;
   }[]
-): Record<string, Record<string, number>>[] {
+): Array<{ group: string; [key: string]: number | string }> {
   const groups = groupBy(data, groupField);
 
   return Object.entries(groups).map(([key, rows]) => {
-    const result: Record<string, Record<string, number>> = { [groupField]: { value: 0 } };
-    result[groupField] = { value: 0 };
+    const result: { group: string; [key: string]: number | string } = { group: key };
 
     aggregations.forEach((agg) => {
       const alias = agg.alias || `${agg.operation}_${agg.field}`;
@@ -448,10 +447,10 @@ export function groupAndAggregate<T extends DataRow>(
           break;
       }
 
-      result[alias] = { value };
+      result[alias] = value;
     });
 
-    return { [key]: result };
+    return result;
   });
 }
 
@@ -548,14 +547,28 @@ export interface DadosConsolidados extends DataRow {
 
 export interface Calculos extends DataRow {}
 
-// Funcoes legadas (mantidas para compatibilidade)
-export const loadCRM = () => loadFromPath<CRMLead>("/data/crm.csv", "csv");
-export const loadDadosConsolidados = () =>
-  loadFromPath<DadosConsolidados>("/data/dados_consolidados.csv", "csv");
-export const loadCalculos = () =>
-  loadFromPath<Calculos>("/data/calculos.csv", "csv");
-export const loadGoogleAnalytics = () =>
-  loadFromPath("/data/google_analytics.csv", "csv");
-export const loadKPIs = () => loadFromPath("/data/kpis_e_metricas_.csv", "csv");
-export const loadLeadsConvertidos = () =>
-  loadFromPath("/data/leads_convertidos_trafego_pago_.csv", "csv");
+// Funcoes legadas (mantidas para compatibilidade - retornam array direto)
+export const loadCRM = async (): Promise<CRMLead[]> => {
+  const result = await loadFromPath<CRMLead>("/data/crm.csv", "csv");
+  return result.data;
+};
+export const loadDadosConsolidados = async (): Promise<DadosConsolidados[]> => {
+  const result = await loadFromPath<DadosConsolidados>("/data/dados_consolidados.csv", "csv");
+  return result.data;
+};
+export const loadCalculos = async (): Promise<Calculos[]> => {
+  const result = await loadFromPath<Calculos>("/data/calculos.csv", "csv");
+  return result.data;
+};
+export const loadGoogleAnalytics = async (): Promise<DataRow[]> => {
+  const result = await loadFromPath("/data/google_analytics.csv", "csv");
+  return result.data;
+};
+export const loadKPIs = async (): Promise<DataRow[]> => {
+  const result = await loadFromPath("/data/kpis_e_metricas_.csv", "csv");
+  return result.data;
+};
+export const loadLeadsConvertidos = async (): Promise<DataRow[]> => {
+  const result = await loadFromPath("/data/leads_convertidos_trafego_pago_.csv", "csv");
+  return result.data;
+};

@@ -397,8 +397,12 @@ export function calcularTendencia(
 export function determinarStatus(
   valor: number,
   thresholds: { good: number; warning: number; danger: number },
-  goodDirection: "up" | "down" = "up"
+  goodDirection: "up" | "down" | "neutral" = "up"
 ): "success" | "warning" | "danger" {
+  if (goodDirection === "neutral") {
+    // Para KPIs neutros, sempre retorna sucesso (não há direção boa ou ruim)
+    return "success";
+  }
   if (goodDirection === "up") {
     if (valor >= thresholds.good) return "success";
     if (valor >= thresholds.warning) return "warning";

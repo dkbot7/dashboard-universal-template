@@ -1,7 +1,5 @@
 "use client";
 
-export const dynamic = "force-dynamic";
-
 import { useEffect, useState } from "react";
 import { KPICard } from "@/components/kpi-card";
 import { useDataFromPath, sumField, avgField, countField } from "@/lib/data-loader";
